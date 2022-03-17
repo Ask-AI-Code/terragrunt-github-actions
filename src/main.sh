@@ -131,7 +131,7 @@ function installTerragrunt {
 
   echo "Downloading Terragrunt v${tgVersion}"
   status_code=$(curl -s -S -L -o /tmp/terragrunt --write-out "%{http_code}" ${url})
-  echo "status_code=$status_code" # TODO: Remove
+
   if [ "${?}" -ne 0 ] || [ "${status_code}" -ne "200" ]; then
     echo "Failed to download Terragrunt v${tgVersion}"
     exit 1
@@ -156,6 +156,7 @@ function loadCreds {
 
 function main {
   loadCreds
+  cat ${GITHUB_EVENT_PATH}
 
   # Source the other files to gain access to their functions
   scriptDir=$(dirname ${0})
