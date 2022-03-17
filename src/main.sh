@@ -127,24 +127,24 @@ function installTerragrunt {
     fi
   fi
 
-  url="https://github.com/gruntwork-io/terragrunt/releases/download/${tgVersion}/terragrunt_linux_amd64"
+  url="https://github.com/gruntwork-io/terragrunt/releases/download/v${tgVersion}/terragrunt_linux_amd64"
 
-  echo "Downloading Terragrunt ${tgVersion}"
-  curl -s -S -L -o /tmp/terragrunt ${url}
-  if [ "${?}" -ne 0 ]; then
-    echo "Failed to download Terragrunt ${tgVersion}"
+  echo "Downloading Terragrunt v${tgVersion}"
+  status_code=$(curl -s -S -L -o /tmp/terragrunt ${url})
+  if [ "${?}" -ne 0 ] || [ "${status_code}" -ne "200" ]; then
+    echo "Failed to download Terragrunt v${tgVersion}"
     exit 1
   fi
-  echo "Successfully downloaded Terragrunt ${tgVersion}"
+  echo "Successfully downloaded Terragrunt v${tgVersion}"
 
-  echo "Moving Terragrunt ${tgVersion} to PATH"
+  echo "Moving Terragrunt v${tgVersion} to PATH"
   chmod +x /tmp/terragrunt
   mv /tmp/terragrunt /usr/local/bin/terragrunt 
   if [ "${?}" -ne 0 ]; then
-    echo "Failed to move Terragrunt ${tgVersion}"
+    echo "Failed to move Terragrunt v${tgVersion}"
     exit 1
   fi
-  echo "Successfully moved Terragrunt ${tgVersion}"
+  echo "Successfully moved Terragrunt v${tgVersion}"
 }
 
 function main {
