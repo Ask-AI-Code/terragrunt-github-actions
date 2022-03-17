@@ -131,6 +131,7 @@ function installTerragrunt {
 
   echo "Downloading Terragrunt v${tgVersion}"
   status_code=$(curl -s -S -L -o /tmp/terragrunt ${url})
+  echo "status_code=$status_code" # TODO: Remove
   if [ "${?}" -ne 0 ] || [ "${status_code}" -ne "200" ]; then
     echo "Failed to download Terragrunt v${tgVersion}"
     exit 1
