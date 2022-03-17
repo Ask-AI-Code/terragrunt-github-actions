@@ -156,7 +156,6 @@ function loadCreds {
 
 function main {
   loadCreds
-  cat ${GITHUB_EVENT_PATH}
 
   # Source the other files to gain access to their functions
   scriptDir=$(dirname ${0})
