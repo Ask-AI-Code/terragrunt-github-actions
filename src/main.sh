@@ -148,7 +148,15 @@ function installTerragrunt {
   echo "Successfully moved Terragrunt v${tgVersion}"
 }
 
+function loadCreds {
+  echo "Loading creds"
+  echo -n "$GOOGLE_CREDENTIALS_FILE" > /tmp/cred.json
+  export GOOGLE_CREDENTIALS=$(cat /tmp/cred.json | tr -d '\n')
+}
+
 function main {
+  loadCreds
+
   # Source the other files to gain access to their functions
   scriptDir=$(dirname ${0})
   source ${scriptDir}/terragrunt_fmt.sh
