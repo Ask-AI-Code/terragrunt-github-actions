@@ -162,6 +162,7 @@ function loadSSH {
     ssh-add -l
 
     echo "Adding GitHub.com keys"
+    mkdir ~/.ssh
     ssh-keyscan github.com >> ~/.ssh/known_hosts
   fi
 }
