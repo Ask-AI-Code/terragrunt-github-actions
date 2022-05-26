@@ -164,6 +164,7 @@ function loadSSH {
     echo "Adding GitHub.com keys"
     mkdir ~/.ssh
     cp /src/known_hosts ~/.ssh/known_hosts
+    echo "StrictHostKeyChecking " >>  ~/.ssh/config
 
     echo "TEST"
     git clone git@github.com:Ask-AI-Code/infrastructure.git
