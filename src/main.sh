@@ -164,6 +164,9 @@ function loadSSH {
     echo "Adding GitHub.com keys"
     mkdir ~/.ssh
     ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+    echo "TEST"
+    git clone git@github.com:Ask-AI-Code/infrastructure.git
   fi
 }
 
