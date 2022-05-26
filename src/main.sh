@@ -154,6 +154,18 @@ function loadCreds {
   export GOOGLE_CREDENTIALS=$(cat /tmp/cred.json | tr -d '\n')
 }
 
+function loadSSH {
+  if [ "$INPUT_SSH_KEY" != "" ]; then
+    echo "Loading SSH key"
+    ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+    ssh-add - <<< "INPUT_SSH_KEY"
+    ssh-add -l
+
+    echo "Adding GitHub.com keys"
+    ssh-keyscan github.com >> ~/.ssh/known_hosts
+  fi
+}
+
 function main {
   loadCreds
 
