@@ -169,6 +169,7 @@ function loadSSH {
 
 function main {
   loadCreds
+  loadSSH
 
   # Source the other files to gain access to their functions
   scriptDir=$(dirname ${0})
