@@ -155,10 +155,9 @@ function loadCreds {
 }
 
 function loadSSH {
-  echo "INPUT_SSH_KEY=$INPUT_SSH_KEY"
   if [ "$INPUT_SSH_KEY" != "" ]; then
     echo "Loading SSH key"
-    ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+    ssh-agent -a /tmp/ssh_agent.sock
     ssh-add - <<< "INPUT_SSH_KEY"
     ssh-add -l
 
