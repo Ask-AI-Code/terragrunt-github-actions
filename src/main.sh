@@ -158,7 +158,7 @@ function loadSSH {
   if [ "$INPUT_SSH_KEY" != "" ]; then
     echo "Loading SSH key"
     ssh-agent -a /tmp/ssh_agent.sock
-    ssh-add - <<< "INPUT_SSH_KEY"
+    ssh-add - <<< "$INPUT_SSH_KEY"
     ssh-add -l
 
     echo "Adding GitHub.com keys"
