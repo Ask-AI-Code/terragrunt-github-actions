@@ -155,10 +155,10 @@ function loadCreds {
 }
 
 function loadSSH {
-  if [ "$SSH_KEY" != "" ]; then
+  if [ "$INPUT_SSH_KEY" != "" ]; then
     echo "Loading SSH key"
     eval "$(ssh-agent)"
-    ssh-add - <<< $SSH_KEY
+    ssh-add - <<< $INPUT_SSH_KEY
     ssh-add -l
 
     echo "Adding GitHub.com keys"
