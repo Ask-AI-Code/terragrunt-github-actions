@@ -158,7 +158,9 @@ function loadSSH {
   if [ "$INPUT_SSH_KEY" != "" ]; then
     echo "Loading SSH key"
     eval "$(ssh-agent)"
-    ssh-add - <<< "$INPUT_SSH_KEY"
+    echo $INPUT_SSH_KEY > tmp_key
+    chmod 400 tmp_key
+    ssh-add tmp_key
     ssh-add -l
 
     echo "Adding GitHub.com keys"
@@ -170,6 +172,7 @@ function loadSSH {
 
     echo "TEST"
     git clone git@github.com:Ask-AI-Code/infrastructure.git
+    echo "-------------------------------"
   fi
 }
 
