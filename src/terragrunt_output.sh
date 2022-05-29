@@ -12,6 +12,12 @@ function terragruntOutput {
     echo "${outputOutput}"
     echo
 
+    # TODO: Change?
+    echo "MY_STRING<<EOF" >> $GITHUB_ENV
+    echo "$outputOutput" >> $GITHUB_ENV
+    echo "EOF" >> $GITHUB_ENV
+
+
     # https://github.community/t5/GitHub-Actions/set-output-Truncates-Multiline-Strings/m-p/38372/highlight/true#M3322
     outputOutput="${outputOutput//'%'/'%25'}"
     outputOutput="${outputOutput//$'\n'/'%0A'}"
