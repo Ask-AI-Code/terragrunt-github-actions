@@ -162,7 +162,7 @@ function loadSSH {
     ssh-add -l
 
     echo "Adding GitHub.com keys"
-    mkdir ~/.ssh
+    mkdir -p ~/.ssh
     cp /src/known_hosts ~/.ssh/known_hosts
     echo "StrictHostKeyChecking no" >> ~/.ssh/config
     echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
