@@ -154,8 +154,24 @@ function loadCreds {
   export GOOGLE_CREDENTIALS=$(cat /tmp/cred.json | tr -d '\n')
 }
 
+function loadSSH {
+  if [ "$INPUT_SSH_KEY" != "" ]; then
+    echo "Loading SSH key"
+    eval "$(ssh-agent)"
+    ssh-add - <<< $INPUT_SSH_KEY
+    ssh-add -l
+
+    echo "Adding GitHub.com keys"
+    mkdir -p ~/.ssh
+    cp /src/known_hosts ~/.ssh/known_hosts
+    echo "StrictHostKeyChecking no" >> ~/.ssh/config
+    echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+  fi
+}
+
 function main {
   loadCreds
+  loadSSH
 
   # Source the other files to gain access to their functions
   scriptDir=$(dirname ${0})
