@@ -6,4 +6,4 @@ TBD
 
 ## Checklist
 
-- [] I tested the changes
+- [ ] I tested the changes
