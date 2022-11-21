@@ -13,7 +13,7 @@ function terragruntPlan {
     echo "plan: info: successfully planned Terragrunt configuration in ${tfWorkingDir}"
     echo "${planOutput}"
     echo
-    echo ::set-output name=tf_actions_plan_has_changes::${planHasChanges}
+    echo "tf_actions_plan_has_changes=${planHasChanges}" >> $GITHUB_OUTPUT
     exit ${planExitCode}
   fi
 
@@ -63,13 +63,13 @@ ${planOutput}
     echo "${planPayload}" | curl -s -S -H "Authorization: token ${GITHUB_TOKEN}" --header "Content-Type: application/json" --data @- "${planCommentsURL}" > /dev/null
   fi
 
-  echo ::set-output name=tf_actions_plan_has_changes::${planHasChanges}
+  echo "tf_actions_plan_has_changes=${planHasChanges}" >> $GITHUB_OUTPUT
 
   # https://github.community/t5/GitHub-Actions/set-output-Truncates-Multiline-Strings/m-p/38372/highlight/true#M3322
   planOutput="${planOutput//'%'/'%25'}"
   planOutput="${planOutput//$'\n'/'%0A'}"
   planOutput="${planOutput//$'\r'/'%0D'}"
 
-  echo "::set-output name=tf_actions_plan_output::${planOutput}"
+  echo "tf_actions_plan_output=${planOutput}" >> $GITHUB_OUTPUT
   exit ${planExitCode}
 }
