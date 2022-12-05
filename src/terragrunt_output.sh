@@ -17,7 +17,9 @@ function terragruntOutput {
     # outputOutput="${outputOutput//$'\n'/'%0A'}"
     # outputOutput="${outputOutput//$'\r'/'%0D'}"
 
-    echo "tf_actions_output=${outputOutput}" >> $GITHUB_OUTPUT
+    echo "tf_actions_output=<<EOF" >> $GITHUB_OUTPUT
+    echo "${outputOutput}" >> $GITHUB_OUTPUT
+    echo "EOF" >> $GITHUB_OUTPUT
     exit ${outputExitCode}
   fi
 
