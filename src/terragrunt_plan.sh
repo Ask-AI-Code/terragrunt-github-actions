@@ -65,11 +65,6 @@ ${planOutput}
 
   echo "tf_actions_plan_has_changes=${planHasChanges}" >> $GITHUB_OUTPUT
 
-  # https://github.community/t5/GitHub-Actions/set-output-Truncates-Multiline-Strings/m-p/38372/highlight/true#M3322
-  # planOutput="${planOutput//'%'/'%25'}"
-  # planOutput="${planOutput//$'\n'/'%0A'}"
-  # planOutput="${planOutput//$'\r'/'%0D'}"
-
   echo "tf_actions_plan_output<<EOF" >> $GITHUB_OUTPUT
   echo "${planOutput}" >> $GITHUB_OUTPUT
   echo "EOF" >> $GITHUB_OUTPUT
