@@ -12,12 +12,9 @@ function terragruntOutput {
     echo "${outputOutput}"
     echo
 
-    # https://github.community/t5/GitHub-Actions/set-output-Truncates-Multiline-Strings/m-p/38372/highlight/true#M3322
-    outputOutput="${outputOutput//'%'/'%25'}"
-    outputOutput="${outputOutput//$'\n'/'%0A'}"
-    outputOutput="${outputOutput//$'\r'/'%0D'}"
-
-    echo "::set-output name=tf_actions_output::${outputOutput}"
+    echo "tf_actions_output<<EOF" >> $GITHUB_OUTPUT
+    echo "${outputOutput}" >> $GITHUB_OUTPUT
+    echo "EOF" >> $GITHUB_OUTPUT
     exit ${outputExitCode}
   fi
 
