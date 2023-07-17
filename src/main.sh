@@ -55,7 +55,6 @@ function parseInputs {
     for target in "${targets[@]}"
     do
       :
-      # do whatever on $i
       tfBinary="${tfBinary} -target=${target}"
     done
   fi
