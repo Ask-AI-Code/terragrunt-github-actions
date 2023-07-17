@@ -42,6 +42,10 @@ inputs:
     description: 'The ssh key to load in order to support git pulled modules'
     default: ''
     required: false
+  tg_targets:
+    description: 'The targets to pass to the Terragrunt command.'
+    default: ''
+    required: false
 outputs:
   tf_actions_output:
     description: 'The Terragrunt outputs in JSON format.'

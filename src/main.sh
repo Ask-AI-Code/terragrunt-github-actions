@@ -49,6 +49,17 @@ function parseInputs {
     tfBinary=${INPUT_TF_ACTIONS_BINARY}
   fi
 
+  if [[ -n "${INPUT_TG_TARGETS}" ]]; then
+    targets=($INPUT_TG_TARGETS)
+
+    for target in "${targets[@]}"
+    do
+      :
+      # do whatever on $i
+      tfBinary="${tfBinary} -target=${target}"
+    done
+  fi
+
   tfComment=0
   if [ "${INPUT_TF_ACTIONS_COMMENT}" == "1" ] || [ "${INPUT_TF_ACTIONS_COMMENT}" == "true" ]; then
     tfComment=1
