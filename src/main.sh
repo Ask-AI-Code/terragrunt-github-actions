@@ -177,6 +177,7 @@ function main {
   scriptDir=$(dirname ${0})
   source ${scriptDir}/terragrunt_fmt.sh
   source ${scriptDir}/terragrunt_init.sh
+  source ${scriptDir}/terragrunt_init_upgrade.sh 
   source ${scriptDir}/terragrunt_validate.sh
   source ${scriptDir}/terragrunt_plan.sh
   source ${scriptDir}/terragrunt_apply.sh
@@ -198,6 +199,10 @@ function main {
     init)
       installTerragrunt
       terragruntInit ${*}
+      ;;
+    init-upgrade)
+      installTerragrunt
+      terragruntInitUpgrade ${*}
       ;;
     validate)
       installTerragrunt
