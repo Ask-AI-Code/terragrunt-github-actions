@@ -1,6 +1,10 @@
 FROM alpine:3 
 
-RUN ["/bin/sh", "-c", "apk add --update --no-cache bash ca-certificates curl git jq openssh"]
+RUN apk update && \
+    apk upgrade --no-cache && \
+    apk add --no-cache \
+    bash ca-certificates openssl curl git jq openssh && \
+    update-ca-certificates
 
 COPY ["src", "/src/"]
 
