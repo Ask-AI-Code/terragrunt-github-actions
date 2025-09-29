@@ -1,6 +1,6 @@
 name: 'Terragrunt GitHub Actions'
 description: 'Runs Terragrunt commands via GitHub Actions.'
-author:  'HashiCorp, Inc. Terraform Team <terraform@hashicorp.com>'
+author: 'HashiCorp, Inc. Terraform Team <terraform@hashicorp.com>'
 branding:
   icon: 'cloud'
   color: 'purple'
@@ -28,7 +28,7 @@ inputs:
     description: 'Token for the CLI credentials file.'
   tf_actions_comment:
     description: 'Whether or not to comment on pull requests.'
-    default: true
+    default: 'true'
     required: false
   tf_actions_working_dir:
     description: 'Terragrunt working directory.'
@@ -36,7 +36,7 @@ inputs:
     required: false
   tf_actions_fmt_write:
     description: 'Write Terragrunt fmt changes to source files.'
-    default: false
+    default: 'false'
     required: false
   ssh_key:
     description: 'The ssh key to load in order to support git pulled modules'
