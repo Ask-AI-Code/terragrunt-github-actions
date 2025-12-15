@@ -8,7 +8,16 @@ function terragruntApply {
     extraArgs=""
   fi
   echo "extraArgs=${extraArgs}"
-  applyOutput=$(${tfBinary} apply ${extraArgs} ${*} 2>&1)
+  # Stream output live AND capture it.
+  # - stderr remains stderr on the runner
+  # - stdout remains stdout on the runner
+  # - both are also captured into applyOutput for later use (PR comment)
+  applyOutput="$(
+    set -o pipefail
+    "${tfBinary}" apply ${extraArgs} "$@" \
+      > >(tee /dev/stdout) \
+      2> >(tee /dev/stderr >&2)
+  )"
   applyExitCode=${?}
   applyCommentStatus="Failed"
 
