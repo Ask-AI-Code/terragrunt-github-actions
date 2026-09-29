@@ -85,6 +85,9 @@ EOF
   fi
 }
 
+# GitHub release downloads intermittently return non-200 when many jobs download in parallel.
+curlRetryArgs=(--fail --retry 5 --retry-delay 3 --retry-all-errors)
+
 function installTerraform {
   if [[ "${tfVersion}" == "latest" ]]; then
     echo "Checking the latest version of Terraform"
@@ -99,9 +102,10 @@ function installTerraform {
   url="https://releases.hashicorp.com/terraform/${tfVersion}/terraform_${tfVersion}_linux_amd64.zip"
 
   echo "Downloading Terraform v${tfVersion}"
-  status_code=$(curl -s -S -L -o /tmp/terraform_${tfVersion} --write-out "%{http_code}" ${url})
-  if [ "${?}" -ne 0 ] || [ "${status_code}" -ne "200" ]; then
-    echo "Failed to download Terraform v${tfVersion}"
+  status_code=$(curl -s -S -L "${curlRetryArgs[@]}" -o /tmp/terraform_${tfVersion} --write-out "%{http_code}" ${url})
+  curl_exit=${?}
+  if [ "${curl_exit}" -ne 0 ] || [ "${status_code}" -ne "200" ]; then
+    echo "Failed to download Terraform v${tfVersion} (curl exit ${curl_exit}, HTTP ${status_code})"
     exit 1
   fi
   echo "Successfully downloaded Terraform v${tfVersion}"
@@ -130,10 +134,10 @@ function installTerragrunt {
   url="https://github.com/gruntwork-io/terragrunt/releases/download/v${tgVersion}/terragrunt_linux_amd64"
 
   echo "Downloading Terragrunt v${tgVersion}"
-  status_code=$(curl -s -S -L -o /tmp/terragrunt --write-out "%{http_code}" ${url})
-
-  if [ "${?}" -ne 0 ] || [ "${status_code}" -ne "200" ]; then
-    echo "Failed to download Terragrunt v${tgVersion}"
+  status_code=$(curl -s -S -L "${curlRetryArgs[@]}" -o /tmp/terragrunt --write-out "%{http_code}" ${url})
+  curl_exit=${?}
+  if [ "${curl_exit}" -ne 0 ] || [ "${status_code}" -ne "200" ]; then
+    echo "Failed to download Terragrunt v${tgVersion} (curl exit ${curl_exit}, HTTP ${status_code})"
     exit 1
   fi
   echo "Successfully downloaded Terragrunt v${tgVersion}"
