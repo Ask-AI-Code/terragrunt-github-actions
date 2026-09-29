@@ -79,7 +79,7 @@ function runWithStateRecovery {
   listErroredStateFiles > "${stepSnapshot}"
 
   for ((attempt = 1; ; attempt++)); do
-    output=$(env -u TERRAGRUNT_AUTO_RETRY TERRAGRUNT_NO_AUTO_RETRY=true "${@}" 2>&1)
+    output=$(env TERRAGRUNT_AUTO_RETRY=false TERRAGRUNT_NO_AUTO_RETRY=true "${@}" 2>&1)
     exitCode=${?}
     echo "${output}"
     [ ${exitCode} -eq 0 ] && break
