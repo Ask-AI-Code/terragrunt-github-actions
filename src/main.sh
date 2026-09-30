@@ -198,7 +198,7 @@ function main {
   # Wait for a lock held by another run of the same branch instead of failing at once.
   for cmd in plan apply destroy; do
     var="TF_CLI_ARGS_${cmd}"
-    export "${var}=-lock-timeout=10m ${!var}"
+    export "${var}=-lock-timeout=10m ${!var:-}"
   done
 
   case "${tfSubcommand}" in
