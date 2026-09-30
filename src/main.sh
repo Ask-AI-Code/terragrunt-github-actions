@@ -86,7 +86,7 @@ EOF
 }
 
 # GitHub release downloads intermittently return non-200 when many jobs download in parallel.
-curlRetryArgs=(--fail --retry 5 --retry-delay 3 --retry-all-errors)
+curlRetryArgs=(--fail --retry 7 --retry-all-errors)
 
 function installTerraform {
   if [[ "${tfVersion}" == "latest" ]]; then
