@@ -8,7 +8,7 @@ function terragruntPlan {
     extraArgs=""
   fi
   echo "extraArgs=${extraArgs}"
-  planOutput=$(${tfBinary} plan ${extraArgs} ${*} 2>&1)
+  planOutput=$(runWithStateRecovery --ok-exit-code 2 ${tfBinary} plan ${extraArgs} ${*})
   planExitCode=${?}
   planHasChanges=false
   planCommentStatus="Failed"
