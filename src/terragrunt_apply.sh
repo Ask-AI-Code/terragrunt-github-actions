@@ -8,7 +8,7 @@ function terragruntApply {
     extraArgs=""
   fi
   echo "extraArgs=${extraArgs}"
-  applyOutput=$(${tfBinary} apply ${extraArgs} ${*} 2>&1)
+  applyOutput=$(runWithStateRecovery ${tfBinary} apply ${extraArgs} ${*})
   applyExitCode=${?}
   applyCommentStatus="Failed"
 
