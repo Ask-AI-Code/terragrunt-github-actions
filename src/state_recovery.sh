@@ -22,13 +22,27 @@ retryablePatterns=(
   "Could not download module|The requested URL returned error: 429"
   "net/http: TLS.*handshake timeout|"
 )
+retryablePatterns+=(
+  "Build failed with status: INTERNAL_ERROR|"
+  "Could not get operation details for operation|"
+  "There were concurrent policy changes|"
+)
+moduleFetchRetryablePatterns=(
+  "error downloading 'ssh://git@github\.com/|Permission denied \(publickey\)"
+  "error downloading 'ssh://git@github\.com/|ssh: connect to host github\.com"
+  "error downloading 'ssh://git@github\.com/|Connection closed by"
+  "error downloading 'ssh://git@github\.com/|Could not resolve hostname github\.com"
+  "error downloading 'ssh://git@github\.com/|Connection reset by peer"
+)
 genericRetryMaxAttempts=3
 genericRetrySleepSeconds=5
+moduleFetchRetrySleepSeconds=30
 statePushMaxAttempts=5
 
-function isRetryableOutput {
+function matchesAnyPattern {
   local output="${1}" pattern first second
-  for pattern in "${retryablePatterns[@]}"; do
+  shift
+  for pattern in "${@}"; do
     first="${pattern%%|*}"
     second="${pattern#*|}"
     if grep -qE -- "${first}" <<< "${output}" && { [ -z "${second}" ] || grep -qE -- "${second}" <<< "${output}"; }; then
@@ -36,6 +50,14 @@ function isRetryableOutput {
     fi
   done
   return 1
+}
+
+function isModuleFetchFailure {
+  matchesAnyPattern "${1}" "${moduleFetchRetryablePatterns[@]}"
+}
+
+function isRetryableOutput {
+  matchesAnyPattern "${1}" "${retryablePatterns[@]}" || isModuleFetchFailure "${1}"
 }
 
 function isStateSaveFailure {
@@ -72,17 +94,24 @@ function pushErroredState {
 # Runs the given command, printing the output of every attempt. On failure:
 #   1. errored.tfstate written during this step -> push each (plain push, never forced), then re-run once.
 #   2. state-save failure without a pushable file -> fail, never re-run blindly.
-#   3. Terragrunt's default transient errors -> re-run, same as Terragrunt's built-in retry.
+#   3. Terragrunt's default transient errors, plus the module-fetch and GCP ones above -> re-run.
 function runWithStateRecovery {
-  local stepSnapshot output exitCode attempt erroredFiles erroredFile recovered=0
+  local stepSnapshot output exitCode attempt erroredFiles erroredFile recovered=0 okExitCode=0 sleepSeconds
+  if [ "${1}" == "--ok-exit-code" ]; then
+    okExitCode=${2}
+    shift 2
+  fi
   stepSnapshot=$(mktemp)
   listErroredStateFiles > "${stepSnapshot}"
 
   for ((attempt = 1; ; attempt++)); do
-    output=$(env TERRAGRUNT_AUTO_RETRY=false TERRAGRUNT_NO_AUTO_RETRY=true "${@}" 2>&1)
+    # 0.36.5 reads TERRAGRUNT_AUTO_RETRY, 0.69.0 TERRAGRUNT_NO_AUTO_RETRY, 0.91.0 TG_NO_AUTO_RETRY.
+    output=$(env TERRAGRUNT_AUTO_RETRY=false TERRAGRUNT_NO_AUTO_RETRY=true TG_NO_AUTO_RETRY=true "${@}" 2>&1)
     exitCode=${?}
     echo "${output}"
-    [ ${exitCode} -eq 0 ] && break
+    if [ ${exitCode} -eq 0 ] || [ ${exitCode} -eq ${okExitCode} ]; then
+      break
+    fi
 
     erroredFiles=$(findErroredStateFilesSince "${stepSnapshot}")
     if [ -n "${erroredFiles}" ]; then
@@ -104,8 +133,12 @@ function runWithStateRecovery {
     fi
 
     if [ ${attempt} -lt ${genericRetryMaxAttempts} ] && isRetryableOutput "${output}"; then
-      echo "state-recovery: transient error; sleeping ${genericRetrySleepSeconds}s before retrying."
-      sleep ${genericRetrySleepSeconds}
+      sleepSeconds=${genericRetrySleepSeconds}
+      if isModuleFetchFailure "${output}"; then
+        sleepSeconds=$((moduleFetchRetrySleepSeconds * attempt))
+      fi
+      echo "state-recovery: transient error; sleeping ${sleepSeconds}s before retrying."
+      sleep ${sleepSeconds}
       continue
     fi
     break
