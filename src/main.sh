@@ -85,6 +85,19 @@ EOF
   fi
 }
 
+# Terragrunt >= 0.73 renamed its env vars to TG_* (older versions without the cache ignore both), and the
+# cache server logs to stderr, which would corrupt the JSON that `output` captures with 2>&1.
+function enableProviderCache {
+  if [ "${tfSubcommand}" == "output" ]; then
+    return
+  fi
+  if [ "$(printf '%s\n' 0.73.0 "${tgVersion}" | sort -V | head -n 1)" == "0.73.0" ]; then
+    export TG_PROVIDER_CACHE="${TG_PROVIDER_CACHE:-1}"
+  else
+    export TERRAGRUNT_PROVIDER_CACHE="${TERRAGRUNT_PROVIDER_CACHE:-1}"
+  fi
+}
+
 # GitHub release downloads intermittently return non-200 when many jobs download in parallel.
 curlRetryArgs=(--fail --retry 7 --retry-all-errors)
 
@@ -192,6 +205,7 @@ function main {
 
   parseInputs
   configureCLICredentials
+  enableProviderCache
   installTerraform
   cd ${GITHUB_WORKSPACE}/${tfWorkingDir}
 
