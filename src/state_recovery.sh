@@ -23,6 +23,9 @@ retryablePatterns=(
   "net/http: TLS.*handshake timeout|"
 )
 retryablePatterns+=(
+  "Failed to install provider|connection reset by peer"
+  "Failed to install provider|tcp.*timeout"
+  "Failed to install provider|TLS handshake timeout"
   "Build failed with status: INTERNAL_ERROR|"
   "Could not get operation details for operation|"
   "There were concurrent policy changes|"
