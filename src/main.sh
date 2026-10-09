@@ -192,6 +192,7 @@ function main {
 
   # Source the other files to gain access to their functions
   scriptDir=$(dirname ${0})
+  source ${scriptDir}/state_lock.sh
   source ${scriptDir}/state_recovery.sh
   source ${scriptDir}/terragrunt_fmt.sh
   source ${scriptDir}/terragrunt_init.sh
@@ -209,8 +210,11 @@ function main {
   installTerraform
   cd ${GITHUB_WORKSPACE}/${tfWorkingDir}
 
+  # Plan never writes state and apply re-plans under its own lock, so a plan lock protects nothing
+  # and is left behind when a plan hangs or is cancelled.
+  export "TF_CLI_ARGS_plan=-lock=false ${TF_CLI_ARGS_plan:-}"
   # Wait for a lock held by another run of the same branch instead of failing at once.
-  for cmd in plan apply destroy; do
+  for cmd in apply destroy; do
     var="TF_CLI_ARGS_${cmd}"
     export "${var}=-lock-timeout=10m ${!var:-}"
   done

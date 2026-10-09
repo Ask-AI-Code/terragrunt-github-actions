@@ -147,6 +147,9 @@ function runWithStateRecovery {
     break
   done
 
+  if [ ${exitCode} -ne 0 ] && [ ${exitCode} -ne ${okExitCode} ]; then
+    explainStateLockError "${output}"
+  fi
   rm -f "${stepSnapshot}"
   return ${exitCode}
 }
