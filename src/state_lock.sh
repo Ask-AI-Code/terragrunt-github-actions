@@ -28,22 +28,19 @@ function lockAgeText {
   fi
 }
 
-# Explains a lock error without ever unlocking: only a human decides whether a lock is stale.
+# Explains a lock error without ever unlocking: the engineer decides whether the lock is stale.
 function explainStateLockError {
   grep -q "Error acquiring the state lock" <<< "${1}" || return 0
   local id path op created
   while IFS='|' read -r id path op created; do
     [ -z "${id}" ] && continue
-    echo "state-lock: ${path} is held by ${op}, created ${created}$(lockAgeText "${created}"), lock ID ${id}."
-    if [ "${op}" == "OperationTypePlan" ]; then
-      echo "state-lock: a plan never writes state. If no run of this module is still planning, remove only this lock with:"
-      if [[ "${path}" == gs://* ]]; then
-        echo "state-lock:   gsutil -h x-goog-if-generation-match:${id} rm ${path}"
-      else
-        echo "state-lock:   terragrunt force-unlock ${id}   (from the module directory)"
-      fi
+    echo "state-lock: ${path} is locked by ${op}, created ${created}$(lockAgeText "${created}"), lock ID ${id}."
+    echo "state-lock: Unlock only if no workflow run or local terraform is still using this module."
+    echo "state-lock: If the lock is from an apply or destroy, it may have stopped halfway: after unlocking, run a plan and review it before the next apply."
+    if [[ "${path}" == gs://* ]]; then
+      echo "state-lock: To remove only this lock: gsutil -h x-goog-if-generation-match:${id} rm ${path}"
     else
-      echo "state-lock: an apply or destroy may still be running, or may have stopped halfway. Do not unlock it; ask infra to check the state first."
+      echo "state-lock: To remove only this lock: terragrunt force-unlock ${id} (from the module directory)"
     fi
   done <<< "$(parseStateLocks "${1}")"
 }
